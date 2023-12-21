@@ -61,7 +61,7 @@ def main():
         dg_connection.on(LiveTranscriptionEvents.Error, on_error)
 
         # connect to websocket
-        options = LiveOptions(model="nova", interim_results=False, language="en-US")
+        options = LiveOptions(model="nova", interim_results=False, language="en-US", channels=1, encoding="opus", sample_rate=24000)
         dg_connection.start(options)
 
         lock_exit = threading.Lock()
