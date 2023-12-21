@@ -11,8 +11,6 @@ from deepgram import DeepgramClient, LiveTranscriptionEvents, LiveOptions
 
 load_dotenv()
 
-# URL for the realtime streaming audio you would like to transcribe
-URL = "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
 
 
 def main():
@@ -69,16 +67,22 @@ def main():
         lock_exit = threading.Lock()
         exit = False
 
-        # define a worker thread
         def myThread():
-            with httpx.stream("GET", URL) as r:
-                for data in r.iter_bytes():
-                    lock_exit.acquire()
-                    if exit:
-                        break
-                    lock_exit.release()
+          with open("audio.ogg", "rb") as f:
+            while True:
+              chunk = f.read(1024)
 
-                    dg_connection.send(data)
+              if not chunk:
+                break
+
+              dg_connection.send(chunk)
+
+              lock_exit.acquire()
+              if exit:
+                lock_exit.release()
+                break
+              lock_exit.release()
+
 
         # start the worker thread
         myHttp = threading.Thread(target=myThread)
